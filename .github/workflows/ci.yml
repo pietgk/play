@@ -13,31 +13,40 @@ permissions:
 jobs:
   main:
     runs-on: ubuntu-latest
+    env:
+      # Write access to the Nx Cloud remote cache + run recording.
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
           filter: tree:0
           fetch-depth: 0
 
-      # This enables task distribution via Nx Cloud
-      # Run this command as early as possible, before dependencies are installed
-      # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      # Connect your workspace by running "nx connect" and uncomment this line to enable task distribution
-      # - run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      # Same toolchain as local dev: node/pnpm/git come from the flake, pinned
+      # by flake.lock. No setup-node — there is no second place to drift.
+      - uses: DeterminateSystems/determinate-nix-action@v3
 
-      # Cache node_modules
-      - uses: actions/setup-node@v4
+      # Warm the devShell once so later steps are instant.
+      - run: nix develop -c node --version
+
+      # Cache pnpm's content-addressed store across runs.
+      - uses: actions/cache@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          path: ~/.local/share/pnpm/store
+          key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-
 
-      - run: npm ci
-      - run: npx playwright install --with-deps
+      # This enables task distribution via Nx Cloud.
+      # Connect your workspace with "nx connect", then uncomment to distribute.
+      # - run: nix develop -c pnpm exec nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
 
-      # Prepend any command with "nx record --" to record its logs to Nx Cloud
-      # - run: npx nx record -- echo Hello World
-      # When you enable task distribution, run the e2e-ci task instead of e2e
-      - run: npx nx run-many -t lint test build e2e
-      # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
-      - run: npx nx fix-ci
+      # Frozen install also re-verifies the supply-chain policy
+      # (minimumReleaseAge / blockExoticSubdeps) on CI, not just locally.
+      - run: nix develop -c pnpm install --frozen-lockfile
+
+      # When you enable task distribution, run the e2e-ci task instead of e2e.
+      - run: nix develop -c pnpm exec nx run-many -t lint test build e2e
+
+      # Nx Cloud recommends fixes for failures to help you get CI green faster.
+      - run: nix develop -c pnpm exec nx fix-ci
         if: always()

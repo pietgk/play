@@ -1,0 +1,25 @@
+# pnpm 11 supply-chain hardening (these keys live here, not in package.json).
+# Docs: https://pnpm.io/settings
+
+# Quarantine newly published versions: refuse anything published < 72h ago.
+# Units are MINUTES (4320 = 72h). Default since v11 is 1440 (24h).
+minimumReleaseAge: 4320
+
+# Fail the install (non-zero exit) if any dependency has an unreviewed build
+# script, instead of silently ignoring it. Default true; explicit for clarity.
+strictDepBuilds: true
+
+# Only direct deps may use exotic (non-registry) sources; transitive deps must
+# resolve from trusted sources. Default true; explicit for clarity.
+blockExoticSubdeps: true
+
+# Explicit allow-list of dependency build/postinstall scripts. Everything not
+# listed here is blocked. Nx's native toolchain needs these.
+allowBuilds:
+  esbuild: true
+  "@swc/core": true
+  "@parcel/watcher": true
+  lmdb: true
+  msgpackr-extract: true
+  less: true
+  nx: true
