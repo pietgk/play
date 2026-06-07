@@ -44,7 +44,6 @@ jobs:
       # Frozen install also re-verifies the supply-chain policy
       # (minimumReleaseAge / blockExoticSubdeps) on CI, not just locally.
       - run: nix develop -c pnpm install --frozen-lockfile
-      - run: nix develop -c pnpm exec playwright install --with-deps
 
       # When you enable task distribution, run the e2e-ci task instead of e2e.
       - run: nix develop -c pnpm exec nx run-many -t lint test build e2e

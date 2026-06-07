@@ -38,6 +38,14 @@
               gh
             ];
 
+            # Playwright browsers come from nixpkgs (autopatched to run in the
+            # nix env — no system libs / `playwright install --with-deps`).
+            # The npm @playwright/test version MUST match this driver version
+            # (pinned together): playwright-driver = ${pkgs.playwright-driver.version}.
+            PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
+            PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+            PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
+
             shellHook = ''
               echo "play — node $(node --version), pnpm $(pnpm --version)"
             '';
