@@ -47,6 +47,9 @@
             PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
 
             shellHook = ''
+              # Put the project's local CLIs (nx, ng, ...) on PATH so they can
+              # be run bare instead of via `pnpm exec`.
+              export PATH="$PWD/node_modules/.bin:$PATH"
               echo "play — node $(node --version), pnpm $(pnpm --version)"
             '';
           };
