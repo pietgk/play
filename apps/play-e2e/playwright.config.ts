@@ -40,10 +40,16 @@ export default defineConfig({
       use: { ...devices['Desktop Firefox'] },
     },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    // WebKit only runs reliably with the nixpkgs browsers on macOS; on Linux
+    // (CI) it hangs at newPage. Run it locally on mac, skip it on Linux.
+    ...(process.platform === 'darwin'
+      ? [
+          {
+            name: 'webkit',
+            use: { ...devices['Desktop Safari'] },
+          },
+        ]
+      : []),
 
     // Uncomment for mobile browsers support
     /* {

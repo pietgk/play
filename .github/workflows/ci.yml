@@ -25,7 +25,6 @@ jobs:
       # Same toolchain as local dev: node/pnpm/git come from the flake, pinned
       # by flake.lock. No setup-node — there is no second place to drift.
       - uses: DeterminateSystems/determinate-nix-action@v3
-      - uses: DeterminateSystems/flakehub-cache-action@main
 
       # Warm the devShell once so later steps are instant.
       - run: nix develop -c node --version
