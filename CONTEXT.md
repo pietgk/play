@@ -3,15 +3,27 @@
 Domain language and shared understanding for this repo. The engineering skills read this
 before exploring the codebase so their output uses the project's own vocabulary.
 
-> **Status:** This is an early-stage sandbox. The `play` app is still close to the default
-> Nx scaffold, so the glossary below is mostly a stub. Add terms here as real concepts
-> emerge — `/grill-with-docs` will append to it lazily as decisions get resolved.
+> **Status:** The workspace has a real deliverable now: a reusable, maintained **Design
+> System** library for future Angular apps. The `play` app is repurposed as its
+> **Playground**. Add terms here as real concepts emerge — `/grill-with-docs` will append
+> to it lazily as decisions get resolved.
 
 ## What this is
 
-`play` is a personal sandbox / playground workspace for experimenting with the Angular +
-Nx toolchain. It is not a product; its purpose is to try things out. Expect throwaway
-apps and libs rather than a stable domain.
+The workspace has two distinct halves:
+
+- **The Design System** — a maintained, reusable Angular component library, the actual
+  product. Built for accessibility (validated to government/enterprise standards), headless
+  behavior via Angular Aria, and consumed by future Angular apps. This is long-lived and
+  carries a support obligation.
+- **The Playground** (`apps/play`) — a free-form surface to test, discuss, demo, and
+  **generatively** (chat / LLM-driven) experiment with components and with the
+  fast-changing concepts the Design System adopts or invents. Throwaway by design; its job
+  is exploration and demonstration, not stability.
+
+The Playground exists *because* the product needs somewhere to be tried out by play and
+demo. The two must not be conflated: changes to the Playground carry no compatibility
+obligation; changes to the Design System do.
 
 ## Tech stack
 
@@ -50,6 +62,17 @@ term here over synonyms. (Empty for now — fill in as the project grows real vo
 | ---- | ------- |
 | _Project_ (Nx) | A buildable/testable unit in the workspace — an app or a lib. Addressed by name in `nx` commands. |
 | _Target_ (Nx) | A runnable task on a project (e.g. `build`, `test`, `lint`, `e2e`), inferred or defined in `project.json`. |
+| _Design System_ | The maintained, reusable Angular component library — the product. Long-lived, accessibility-guaranteed, consumed by future apps. (Proper name TBD.) |
+| _Playground_ | The `apps/play` app: free-form, throwaway surface for testing, demoing, and LLM/chat-driven generative experimentation with the Design System. No compatibility obligation. |
+| _Three-leg separation_ | The principle that a component is split into three independent legs: **design** (look, via tokens), **behavior** (accessible interaction, via Angular Aria), and **data** (state/async, via signals, signal forms, resources). |
+| _Design contract_ (`design.md`) | The authoritative statement of a component's **design leg**, written in the token vocabulary. Read by humans/LLMs to design and validate (descriptive), and read by an LLM to generate the concrete CSS implementation (generative). Owns design only — never behavior or data. |
+| _Design language_ (`DESIGN.md`) | The system-level counterpart at the library root: global token vocabulary, design principles, a11y baseline, and naming conventions that every component's design contract draws on. |
+| _Conformance core_ | The single stable technical accessibility bar every component is built and tested against: **WCAG 2.2 Level AA**. Independent of any one regulation. |
+| _Jurisdiction profile_ | A pluggable mapping that wraps the conformance core for a specific regulation (e.g. EN 301 549, Section 508), adding its extras. New jurisdictions are added as new profiles without changing components. |
+| _Accessibility statement_ | A per-component, per-jurisdiction conformance record derived from the two-tier validation evidence (automated + manual) plus the relevant jurisdiction profile. |
+| _UI intent_ | A component's generic output (e.g. `valueChange`, `submit`, `select`) — what the user did, **not** a domain Command. The consumer maps UI intent → Command. The library's public API speaks UI intent only. |
+| _CQRS/ES_ | The system-wide architecture of the consuming apps: **Commands** (intents to change state), **Events** (immutable facts of what happened), **Query read models** (projections read by the UI). Lives in consumers, never in the Design System's type surface. |
+| _Story wrapper_ | A pluggable Storybook harness that supplies a component's data and context for a story. The **GWT wrapper** (Given = read-model projection, When = interaction → Command, Then = component renders) is the first/preferred, CQRS/ES-based wrapper; **non-CQRS wrappers** can be added later as new types. |
 
 ## Conventions
 
