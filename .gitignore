@@ -11,6 +11,9 @@ node_modules
 # direnv / nix devShell cache
 .direnv
 
+# project-local docker client config (DOCKER_CONFIG; holds nix cli-plugin symlinks)
+.docker
+
 # IDEs and editors
 /.idea
 .project
