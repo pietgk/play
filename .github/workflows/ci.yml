@@ -17,7 +17,7 @@ jobs:
       # Write access to the Nx Cloud remote cache + run recording.
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           filter: tree:0
           fetch-depth: 0
@@ -30,7 +30,7 @@ jobs:
       - run: nix develop -c node --version
 
       # Cache pnpm's content-addressed store across runs.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ~/.local/share/pnpm/store
           key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
