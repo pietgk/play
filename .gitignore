@@ -7,6 +7,8 @@ out-tsc
 
 # dependencies
 node_modules
+# project-local pnpm store (created when the agent container runs pnpm install)
+.pnpm-store
 
 # direnv / nix devShell cache
 .direnv

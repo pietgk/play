@@ -46,7 +46,10 @@ await run({
           command:
             "mkdir -p /home/agent/.codex && cp -r /mnt/host-codex/. /home/agent/.codex/",
         },
-        { command: "nix develop /tmp/flake-prime --no-write-lock-file -c pnpm install --frozen-lockfile", timeoutMs: 300_000 },
+        // The image bakes the Nix devshell into every login shell (ADR 0008),
+        // so `pnpm` is the flake's pnpm. Hooks run via `sh -c`, which does not
+        // source /etc/profile — wrap in `bash -lc` to enter the devshell.
+        { command: "bash -lc 'pnpm install --frozen-lockfile'", timeoutMs: 300_000 },
       ],
     },
   },

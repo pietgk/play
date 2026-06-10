@@ -24,3 +24,19 @@ We therefore build **one image** from the Nix flake — pre-warming the Nix stor
 - `sandcastle docker build-image` is slow the first time (Nix store download). Subsequent builds with a warm Docker layer cache are fast. The CI-built image on `ghcr.io` means contributors and the sandbox pull a pre-built image rather than rebuilding from scratch.
 - The devcontainer and Sandcastle share one image but have different mount conventions: devcontainer bind-mounts the workspace; Sandcastle uses its worktree copy mechanism. Both work against the same pre-warmed Nix store.
 - Any future CI worker running this container (e.g. a GitHub Actions job that uses the devcontainer) gets the same environment for free.
+
+## Amendment (2026-06-10): implementation corrected to match the decision
+
+The first implementation (commit `3c7293b`) silently violated this ADR in two ways, and both surfaced on the very first agent run:
+
+1. **It used `FROM node:22-bookworm`** — the exact "third, manually-maintained environment" the decision above rejects. The base image baked in Node 22 + npm alongside the flake's `nodejs_24`.
+2. **Nix was only placed on `ENV PATH`**, never baked into login shells. Sandcastle runs hooks via `docker exec … sh -c` (which inherits `ENV`, so the setup hook found Nix), but the Codex agent runs every command via `bash -lc` — a login shell whose `/etc/profile` resets PATH. Result: the agent got `nix: command not found` and **silently fell back to the base image's Node 22**, the precise drift this ADR exists to prevent. A bare `nix develop` in the agent also failed because the bind-mounted worktree's `.git` points at a host path absent in the container (`git+file` resolution error).
+
+**Corrective decisions (now implemented and build-validated):**
+
+- **Base is `debian:bookworm-slim`, not a Node image and not `nixos/nix`.** Node/pnpm/git/gh come *only* from the flake. Debian (over `nixos/nix`) is deliberate: it keeps VS Code-server / devcontainer compatibility (standard glibc FHS), easy host UID/GID alignment for the bind-mounted worktree, and single-user daemonless Nix. `nixos/nix` was rejected — its sparse non-FHS userland breaks the devcontainer reuse and complicates the UID/GID dance.
+- **The devshell is baked into *every login shell*.** At build time `nix print-dev-env` captures the full devshell environment (PATH, `PLAYWRIGHT_*`, `NIX_*`) into `/home/agent/.devshell-env.sh`, sourced from `/etc/profile.d/10-devshell.sh`. The host-only `shellHook` (Colima / `DOCKER_HOST` wiring) is stripped. The container therefore *is* the devshell — agents run bare `pnpm nx …` and get the flake-pinned tools; nobody runs `nix develop` against the worktree cwd, so the `git+file` error cannot recur.
+- **Codex installs on the flake's Node** into a writable npm prefix (`/home/agent/.npm-global`), since the Nix store is read-only.
+- **Sandcastle hooks are wrapped in `bash -lc`** so they enter the baked devshell (plain `sh -c` does not source `/etc/profile`).
+
+The original Decision bullets above (image source = flake, Codex on top, ghcr build, no baked credentials, `sandbox = false`) all still hold; this amendment corrects only the base image and how the devshell reaches every shell.

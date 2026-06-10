@@ -9,7 +9,7 @@
     }
   },
   "remoteUser": "agent",
-  "postCreateCommand": "nix develop -c pnpm install --frozen-lockfile",
+  "postCreateCommand": "bash -lc 'pnpm install --frozen-lockfile'",
   "customizations": {
     "vscode": {
       "extensions": [
