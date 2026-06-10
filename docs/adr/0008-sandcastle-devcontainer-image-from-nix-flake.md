@@ -40,3 +40,5 @@ The first implementation (commit `3c7293b`) silently violated this ADR in two wa
 - **Sandcastle hooks are wrapped in `bash -lc`** so they enter the baked devshell (plain `sh -c` does not source `/etc/profile`).
 
 The original Decision bullets above (image source = flake, Codex on top, ghcr build, no baked credentials, `sandbox = false`) all still hold; this amendment corrects only the base image and how the devshell reaches every shell.
+
+**Stale-image drift — `pnpm sandcastle` now rebuilds first.** A run (`pnpm sandcastle`) only *inspects* that the `sandcastle:play` image exists; it never builds it. Building is the separate `sandcastle docker build-image`. So after a `flake.lock` or `Dockerfile` change, a run silently reused the previously-built image — the same drift, one layer down (it's how the first run on the corrected Dockerfile still failed: the old `node:22` image was still cached). The `sandcastle` script now runs `sandcastle:build && tsx …`, so every run rebuilds first. Docker's layer cache makes this a few seconds when nothing changed, and a real rebuild precisely when `flake.lock`/`Dockerfile` did — the image can no longer lag the flake.
