@@ -1,0 +1,22 @@
+{
+  "name": "play",
+  "build": {
+    "dockerfile": "../.sandcastle/Dockerfile",
+    "context": "..",
+    "args": {
+      "AGENT_UID": "${localEnv:UID}",
+      "AGENT_GID": "${localEnv:GID}"
+    }
+  },
+  "remoteUser": "agent",
+  "postCreateCommand": "nix develop -c pnpm install --frozen-lockfile",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "angular.ng-template",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}
