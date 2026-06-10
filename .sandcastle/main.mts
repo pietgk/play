@@ -46,7 +46,7 @@ await run({
           command:
             "mkdir -p /home/agent/.codex && cp -r /mnt/host-codex/. /home/agent/.codex/",
         },
-        { command: "nix develop -c pnpm install --frozen-lockfile" },
+        { command: "nix develop /tmp/flake-prime --no-write-lock-file -c pnpm install --frozen-lockfile", timeoutMs: 300_000 },
       ],
     },
   },
