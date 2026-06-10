@@ -12,6 +12,8 @@
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
     "select/src/**/*.spec.ts",
-    "select/src/**/*.test.ts"
+    "select/src/**/*.test.ts",
+    "**/*.stories.ts",
+    "**/*.stories.js"
   ]
 }

@@ -26,3 +26,4 @@ allowBuilds:
   msgpackr-extract: true
   less: true
   nx: true
+  unrs-resolver: false
