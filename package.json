@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "verify": "nx run-many -t lint test build e2e",
     "sandcastle": "tsx .sandcastle/main.mts",
     "sandcastle:build": "sandcastle docker build-image --dockerfile .sandcastle/Dockerfile"
   },

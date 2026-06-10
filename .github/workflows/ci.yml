@@ -44,8 +44,10 @@ jobs:
       # (minimumReleaseAge / blockExoticSubdeps) on CI, not just locally.
       - run: nix develop -c pnpm install --frozen-lockfile
 
-      # When you enable task distribution, run the e2e-ci task instead of e2e.
-      - run: nix develop -c pnpm exec nx run-many -t lint test build e2e
+      # The verify gate (lint test build e2e) is defined once in package.json
+      # so CI and the Sandcastle agent run the identical set — no gate drift.
+      # When you enable task distribution, switch the `verify` script to e2e-ci.
+      - run: nix develop -c pnpm verify
 
       # Nx Cloud recommends fixes for failures to help you get CI green faster.
       - run: nix develop -c pnpm exec nx fix-ci
