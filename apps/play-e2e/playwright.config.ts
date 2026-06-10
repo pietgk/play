@@ -32,6 +32,11 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      // Force full Chromium instead of Playwright's default headless-shell:
+      // nixpkgs' chromium_headless_shell crashes on aarch64-linux (the
+      // Sandcastle container's arch). The full chromium binary ships in the
+      // same Nix bundle and works on every arch, so PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD
+      // stays satisfied and the config is uniform across host/CI/sandbox.
       use: { ...devices['Desktop Chrome'], channel: 'chromium' },
     },
 

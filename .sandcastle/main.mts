@@ -20,7 +20,16 @@ await run({
   name: "worker",
 
   sandbox: docker({
-    env: { CODEX_HOME: sandboxCodexHome },
+    env: {
+      CODEX_HOME: sandboxCodexHome,
+      // The worktree is bind-mounted (virtiofs); Nx's native task DB can't
+      // live there, so point cache + workspace-data at container-local paths.
+      // This bakes in the workaround the agent otherwise rediscovers each run.
+      // Combined with NX_CLOUD_ACCESS_TOKEN (forwarded via .sandcastle/.env),
+      // cached runs hit the shared Nx Cloud cache instead of being skipped.
+      NX_CACHE_DIRECTORY: "/home/agent/.nx/cache",
+      NX_WORKSPACE_DATA_DIRECTORY: "/home/agent/.nx/workspace-data",
+    },
     mounts: [
       {
         hostPath: hostCodexHome,
