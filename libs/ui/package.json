@@ -1,0 +1,10 @@
+{
+  "name": "@play/ui",
+  "version": "0.0.1",
+  "exports": {
+    "./tokens": {
+      "style": "./tokens/tokens.css"
+    }
+  },
+  "sideEffects": false
+}

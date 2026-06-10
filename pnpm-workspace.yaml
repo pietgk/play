@@ -1,6 +1,9 @@
 # pnpm 11 supply-chain hardening (these keys live here, not in package.json).
 # Docs: https://pnpm.io/settings
 
+packages:
+  - 'libs/*'
+
 # Quarantine newly published versions: refuse anything published < 72h ago.
 # Units are MINUTES (4320 = 72h). Default since v11 is 1440 (24h).
 minimumReleaseAge: 4320
@@ -17,8 +20,8 @@ blockExoticSubdeps: true
 # listed here is blocked. Nx's native toolchain needs these.
 allowBuilds:
   esbuild: true
-  "@swc/core": true
-  "@parcel/watcher": true
+  '@swc/core': true
+  '@parcel/watcher': true
   lmdb: true
   msgpackr-extract: true
   less: true
