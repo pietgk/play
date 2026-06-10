@@ -73,6 +73,13 @@ RUN nix develop /home/agent/flake-prime --no-write-lock-file -c true \
        | grep -vE '^[[:space:]]*eval "\$\{?shellHook' \
        > /home/agent/.devshell-env.sh
 
+# Install the same toolchain into ~/.nix-profile so node/pnpm/git/gh land on
+# the default PATH (ENV above) for EVERY shell — including the bare `sh -c`
+# Sandcastle uses for its internal git/worktree commands, which never source a
+# login profile. The login-shell devshell env (above) adds PLAYWRIGHT_*/env on
+# top; this guarantees the tools themselves are always resolvable.
+RUN nix profile install /home/agent/flake-prime#dev --no-write-lock-file
+
 # Codex CLI — installed with the flake's Node (from the devshell env) into the
 # writable npm prefix on PATH above.
 RUN bash -c '. /home/agent/.devshell-env.sh && npm install -g @openai/codex'

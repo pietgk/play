@@ -22,6 +22,25 @@
             pkgs = import nixpkgs { inherit system; };
           }
         );
+
+      # The single tool list, shared by the devShell (host/CI) and the
+      # `dev` buildEnv (container). One definition — no drift between the
+      # interactive shell and what the Sandcastle/devcontainer image bakes in.
+      toolPackages =
+        pkgs: with pkgs; [
+          nodejs_24
+          pnpm
+          git
+          gh
+
+          # Docker *client* tooling only — the Colima/Lima VM + daemon are
+          # host infrastructure installed via Homebrew (see ADR 0007), so
+          # they are deliberately NOT here. These are the clients our
+          # scripts, the devcontainer CLI, and Sandcastle invoke.
+          docker-client
+          docker-buildx
+          docker-compose
+        ];
     in
     {
       devShells = forAllSystems (
@@ -31,20 +50,7 @@
             # Tool layer only. node_modules is resolved by pnpm inside this
             # shell (networked), never built as a Nix derivation — so Nx's
             # caching never collides with Nix's build sandbox.
-            packages = with pkgs; [
-              nodejs_24
-              pnpm
-              git
-              gh
-
-              # Docker *client* tooling only — the Colima/Lima VM + daemon are
-              # host infrastructure installed via Homebrew (see ADR 0007), so
-              # they are deliberately NOT here. These are the clients our
-              # scripts, the devcontainer CLI, and Sandcastle invoke.
-              docker-client
-              docker-buildx
-              docker-compose
-            ];
+            packages = toolPackages pkgs;
 
             # Playwright browsers come from nixpkgs (autopatched to run in the
             # nix env — no system libs / `playwright install --with-deps`).
@@ -77,6 +83,21 @@
 
               echo "play — node $(node --version), pnpm $(pnpm --version), docker $(docker --version 2>/dev/null | awk '{print $3}' | tr -d ,)"
             '';
+          };
+        }
+      );
+
+      # `dev` is the same toolchain as the devShell, merged into one profile.
+      # The Sandcastle/devcontainer image `nix profile install`s it so the
+      # tools land in ~/.nix-profile/bin — on the default PATH for *every*
+      # shell, including the bare `sh -c` Sandcastle uses for its internal
+      # git/worktree commands (not just login shells).
+      packages = forAllSystems (
+        { pkgs }:
+        {
+          dev = pkgs.buildEnv {
+            name = "play-dev-tools";
+            paths = toolPackages pkgs;
           };
         }
       );
