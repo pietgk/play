@@ -1,0 +1,51 @@
+<div
+  class="ui-select"
+  [class.ui-select--invalid]="invalid()"
+  [class.ui-select--touched]="touched()"
+>
+  <label class="ui-select__label" [for]="triggerId">{{ label() }}</label>
+
+  <div
+    #combobox="ngCombobox"
+    class="ui-select__combobox"
+    ngCombobox
+    readonly
+    [disabled]="disabled()"
+  >
+    <input
+      class="ui-select__trigger"
+      ngComboboxInput
+      readonly
+      [id]="triggerId"
+      [attr.aria-label]="label()"
+      [attr.aria-invalid]="invalid() || null"
+      [disabled]="disabled()"
+      [value]="displayValue()"
+      (keydown)="handleTypeahead($event, combobox)"
+    />
+
+    <ng-template ngComboboxPopupContainer>
+      <div
+        class="ui-select__options"
+        libAriaSelectListbox
+        selectionMode="explicit"
+        [disabled]="disabled()"
+        [value]="ariaValue()"
+        [wrap]="true"
+        (valueChange)="commit($event, combobox)"
+      >
+        @for (option of options(); track option.value) {
+        <div
+          class="ui-select__option"
+          ngOption
+          [disabled]="option.disabled ?? false"
+          [label]="option.label"
+          [value]="option.value"
+        >
+          {{ option.label }}
+        </div>
+        }
+      </div>
+    </ng-template>
+  </div>
+</div>

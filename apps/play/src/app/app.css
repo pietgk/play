@@ -8,7 +8,7 @@
   font-family: var(--ui-font-family-sans);
 }
 
-.token-demo {
+.select-demo {
   max-width: 42rem;
   margin: 0 auto;
 }
@@ -27,11 +27,14 @@ h1 {
   line-height: var(--ui-line-height-tight);
 }
 
-.token-swatch {
-  display: grid;
-  gap: var(--ui-space-2);
+.select-demo lib-select {
+  max-width: 24rem;
   margin-top: var(--ui-space-8);
-  padding: var(--ui-space-8);
+}
+
+.command-output {
+  margin-top: var(--ui-space-6);
+  padding: var(--ui-space-4);
   border-radius: var(--ui-radius-lg);
   color: var(--ui-color-on-primary);
   background: var(--ui-color-primary);

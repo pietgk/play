@@ -10,6 +10,8 @@
   "private": true,
   "packageManager": "pnpm@11.5.1",
   "dependencies": {
+    "@angular/aria": "21.2.0",
+    "@angular/cdk": "21.2.0",
     "@angular/common": "~21.2.0",
     "@angular/compiler": "~21.2.0",
     "@angular/core": "~21.2.0",

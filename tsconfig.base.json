@@ -14,7 +14,8 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "paths": {
-      "@play/ui": ["./libs/ui/src/index.ts"]
+      "@play/ui": ["./libs/ui/src/index.ts"],
+      "@play/ui/select": ["./libs/ui/select/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

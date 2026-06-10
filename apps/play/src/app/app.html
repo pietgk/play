@@ -1,15 +1,23 @@
 <main class="playground">
-  <section aria-labelledby="token-demo-title" class="token-demo">
+  <section aria-labelledby="select-demo-title" class="select-demo">
     <p class="eyebrow">Design System Playground</p>
-    <h1 id="token-demo-title">Themeable token contract</h1>
+    <h1 id="select-demo-title">Select intent to Command</h1>
     <p>
-      This swatch consumes the library defaults, then the Playground overrides
-      the primary color without rebuilding <code>libs/ui</code>.
+      This themed Select emits UI intent. The Playground maps that intent to a
+      domain Command.
     </p>
 
-    <div class="token-swatch">
-      <strong>--ui-color-primary</strong>
-      <span>Overridden by the Playground</span>
-    </div>
+    <lib-select
+      label="Project status"
+      [options]="statusOptions"
+      [(value)]="status"
+      (select)="changeStatus($event)"
+    />
+
+    <p class="command-output" aria-live="polite">
+      @if (lastCommand(); as command) { Command: {{ command.type }} / {{
+      command.status }} } @else { Choose a different status to dispatch a
+      Command. }
+    </p>
   </section>
 </main>

@@ -41,6 +41,12 @@ export default [
     },
   },
   {
+    files: ['**/select/src/select.ts'],
+    rules: {
+      '@angular-eslint/no-output-native': 'off',
+    },
+  },
+  {
     files: ['**/*.html'],
     // Override or add rules here
     rules: {},
