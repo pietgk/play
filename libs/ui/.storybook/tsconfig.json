@@ -12,6 +12,8 @@
     "../src/**/*.stories.mdx",
     "../select/**/*.stories.ts",
     "*.js",
-    "*.ts"
+    "a11y.ts",
+    "main.ts",
+    "preview.ts"
   ]
 }

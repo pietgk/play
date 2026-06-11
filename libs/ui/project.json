@@ -73,9 +73,14 @@
     },
     "test-storybook": {
       "executor": "nx:run-commands",
+      "dependsOn": ["build-storybook"],
       "options": {
-        "command": "test-storybook -c libs/ui/.storybook --url=http://localhost:4400 --maxWorkers=1"
+        "command": "node libs/ui/.storybook/run-storybook-tests.mjs"
       }
+    },
+    "e2e": {
+      "executor": "nx:noop",
+      "dependsOn": ["test-storybook"]
     },
     "static-storybook": {
       "executor": "@nx/web:file-server",
