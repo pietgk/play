@@ -9,7 +9,8 @@
     "kill": "lsof -ti :4200 -ti :4400 | xargs -I{} kill {} 2>/dev/null; true",
     "verify": "nx run-many -t lint test build e2e",
     "sandcastle": "pnpm sandcastle:build && tsx .sandcastle/main.mts",
-    "sandcastle:build": "sandcastle docker build-image --dockerfile .sandcastle/Dockerfile"
+    "sandcastle:build": "sandcastle docker build-image --dockerfile .sandcastle/Dockerfile",
+    "sandcastle:clean": "bash .sandcastle/clean.sh"
   },
   "private": true,
   "packageManager": "pnpm@11.5.1",
