@@ -2,6 +2,7 @@
   class="ui-select"
   [class.ui-select--invalid]="invalid()"
   [class.ui-select--touched]="touched()"
+  [attr.data-touched]="touched() || null"
 >
   <label class="ui-select__label" [for]="triggerId">{{ label() }}</label>
 

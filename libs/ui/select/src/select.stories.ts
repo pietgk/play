@@ -90,7 +90,9 @@ export const Touched: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('combobox', { name: 'Project status' });
+    const field = trigger.closest('.ui-select');
 
+    await expect(field).toHaveAttribute('data-touched', 'true');
     await userEvent.click(trigger);
     await userEvent.keyboard('d');
 

@@ -2,6 +2,25 @@ import { TestBed } from '@angular/core/testing';
 import { Select } from '@play/ui/select';
 
 describe('Select', () => {
+  it('renders touched control state', async () => {
+    await TestBed.configureTestingModule({
+      imports: [Select],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(Select);
+
+    fixture.componentRef.setInput('options', []);
+    fixture.componentRef.setInput('touched', true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const field = fixture.nativeElement.querySelector(
+      '.ui-select',
+    ) as HTMLElement;
+
+    expect(field.getAttribute('data-touched')).toBe('true');
+  });
+
   it('exposes its current value, expanded state, and options to assistive technology', async () => {
     await TestBed.configureTestingModule({
       imports: [Select],
