@@ -1,0 +1,78 @@
+import { Meta, Title, Canvas, Controls, Markdown } from '@storybook/addon-docs/blocks';
+import * as SelectStories from './select.stories';
+import designContract from '../design.md';
+
+<Meta of={SelectStories} />
+
+<Title />
+
+An accessible, token-styled single-select. The component is **domain-agnostic**: it
+renders presented state from `input()`s and emits a generic `select` **UI intent** —
+never a Command (ADR 0005). Below, the four legs of the component and how this Docs
+page surfaces each.
+
+## Design leg
+
+The design contract is the single source of truth for the look (anatomy, states,
+tokens) and is imported here verbatim from `design.md`.
+
+<Markdown>{designContract}</Markdown>
+
+### States
+
+Each state declared in the design contract is a showcase story — together they are the
+design catalogue, the `design.md` drift guard (ADR 0003), and the per-state axe gate
+(ADR 0004).
+
+<Canvas of={SelectStories.Default} />
+<Canvas of={SelectStories.Disabled} />
+<Canvas of={SelectStories.Invalid} />
+<Canvas of={SelectStories.Touched} />
+
+## Behavior leg
+
+Interaction is provided by Angular Aria's combobox/listbox. The trigger exposes
+`role="combobox"`; keyboard users open with `Enter`, move with the arrow keys, type to
+match (typeahead), and `Escape` closes. Mouse users click an option. The interaction
+paths are covered by the scenario stories (see **Testing**).
+
+## Data leg — the CQRS flow, made visible
+
+The Select is wrapped in a **GWT render layer** (ADR 0009) that maps the component onto
+Storybook's native panels, so the Command/Event/Query thinking is visible while you
+play:
+
+```
+Given  read-model projection ──▶  Controls (args)        the state you see/seed
+When   UI intent ─▶ Command  ──▶  Actions panel          intent + derived Command logged
+Then   next read model       ──▶  Canvas (live value)    the component re-renders
+```
+
+- **Given → Controls.** The args below seed the presented state from a read-model
+  projection. The component never owns this state — it only renders it.
+- **When → Actions.** Selecting emits the `select` UI intent; the render layer derives a
+  `ChangeSelection` Command and logs both to the Actions panel. The component's public
+  API speaks intent only; the Command lives in the consumer.
+- **Then → Canvas.** The new value flows back through the component's `model()` two-way
+  binding, so the canvas (and the value control) update.
+
+## Accessibility
+
+The conformance core is **WCAG 2.2 Level AA** (ADR 0004). Every showcase story runs the
+axe gate per state in CI (Tier 1); the manual conformance checklist (Tier 2) — keyboard
+map, focus order, SR labels, reduced motion, contrast — is signed off per component.
+
+## API
+
+The presented-state surface — the inputs that carry the Given, and the `select` UI
+intent. Use the controls to explore each.
+
+<Controls />
+
+## Testing
+
+- **Pure logic** (Vitest): the `when`/`then` Command mapping (`select.gwt.spec.ts`).
+- **Showcase stories** (this page): one per state — drift guard + axe gate.
+- **Scenario stories** (`test`/`!autodocs`): keyboard / mouse / typeahead select and
+  disabled-blocks-interaction, asserting the intent fired and the rendered Then.
+- **E2e**: none — Select is a leaf component (ADR 0010).
