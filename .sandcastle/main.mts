@@ -52,8 +52,17 @@ await run({
     sandbox: {
       onSandboxReady: [
         {
+          // Copy ONLY the credential, not the whole host ~/.codex. The host dir
+          // carries 213MB of machine-local state — sessions/, logs, caches, and
+          // a state.db whose rows map thread IDs to host-absolute rollout paths
+          // (/Users/grop/.codex/sessions/…). Inside the Linux container those
+          // paths don't exist, so codex's startup `rollout::list` fails with
+          // "stale rollout path" and exits before reading the prompt. config.toml
+          // is just as toxic here (it pins CODEX_HOME=/Users/grop/.codex and host
+          // plugin/notify paths). auth.json is the only thing the container needs;
+          // codex regenerates a clean state db per run. (ADR 0008.)
           command:
-            "mkdir -p /home/agent/.codex && cp -r /mnt/host-codex/. /home/agent/.codex/",
+            "mkdir -p /home/agent/.codex && cp /mnt/host-codex/auth.json /home/agent/.codex/auth.json",
         },
         // The image bakes the Nix devshell into every login shell (ADR 0008),
         // so `pnpm` is the flake's pnpm. Hooks run via `sh -c`, which does not
