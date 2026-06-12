@@ -29,7 +29,7 @@
       toolPackages =
         pkgs: with pkgs; [
           nodejs_24
-          pnpm
+          pnpm # keep in sync with package.json "packageManager"; enforced by scripts/check-pnpm-pin.mjs
           git
           gh
 
